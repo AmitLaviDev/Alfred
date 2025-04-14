@@ -1,0 +1,28 @@
+property warp_path : "/Applications/Warp.app"
+property warp_bundle_id : "dev.warp.Warp-Stable"
+
+-- Tries to activate Warp or launch if not running
+on call_forward()
+  tell application "System Events"
+    if not (exists (application process "Warp")) then
+      do shell script "open -a " & quoted form of warp_path
+      delay 0.5
+    end if
+  end tell
+  tell application id warp_bundle_id to activate
+end call_forward
+
+-- Send query to clipboard and paste it into Warp
+on send_text(custom_text)
+  set the clipboard to custom_text
+  tell application "System Events"
+    keystroke "v" using {command down}
+    keystroke return
+  end tell
+end send_text
+
+on alfred_script(query)
+  call_forward()
+  delay 0.5
+  send_text(query)
+end alfred_script
